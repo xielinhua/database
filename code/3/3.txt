@@ -1,0 +1,9 @@
+1	select c_name, c_mail, c_phone from client where client.c_id in 
+2	(
+3		select p1.pro_c_id 
+4		from property as p1
+5		join property as p2
+6		on p1.pro_c_id = p2.pro_c_id
+7		where p1.pro_type = 2
+8		and p2.pro_type = 3
+9	) order by c_id;

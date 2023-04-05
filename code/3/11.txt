@@ -1,0 +1,9 @@
+1	select c_id, c_name, number_of_cards from
+2	(
+3		select c_id, c_name, count(b_c_id) as number_of_cards
+4		from client left join bank_card
+5		on c_id = b_c_id
+6		where c_name like '黄%' 
+7		group by c_id, c_name, b_c_id
+8		order by count(b_c_id) desc, c_id
+9	);

@@ -1,0 +1,2 @@
+3	# 恢复
+4	gs_restore -U gaussdb -W 'Passwd123@123' residents_bak.sql -p 5432 -d residents

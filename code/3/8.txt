@@ -1,0 +1,9 @@
+1	select c_name, c_id_card, c_phone
+2	from client
+3	where c_id in(
+4		select b_c_id 
+5		from bank_card
+6		where b_type = '信用卡'
+7		group by b_c_id
+8		having count(*) >= 2
+9	);

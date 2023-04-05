@@ -1,0 +1,5 @@
+1	select c_name, c_id_card, sum(pro_income) as total_income
+2	from client, property
+3	where c_id = pro_c_id and pro_status = '可用'
+4	group by c_name, c_id_card, pro_c_id
+5	order by sum(pro_income) desc limit 3;

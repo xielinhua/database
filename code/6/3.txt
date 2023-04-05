@@ -1,0 +1,58 @@
+	create procedure sp_transfer(IN applicant_id int,      
+						 IN source_card_id char(30),
+						 IN receiver_id int, 
+						 IN dest_card_id char(30),
+						 IN	amount numeric(10,2),
+						 OUT return_code int)
+	as 
+		declare client_id_applicant int;
+		declare client_id_receiver int;
+		declare bank_card_type_a char(20);
+		declare bank_card_type_r char(20);
+		declare card_balance_a numeric(10, 2);
+		declare card_balance_r numeric(10, 2);
+	begin	
+			select b_c_id into client_id_applicant from bank_card where b_number = source_card_id;
+			select b_c_id into client_id_receiver from bank_card where b_number = dest_card_id;
+			select b_type into bank_card_type_a from bank_card where b_number = source_card_id;
+			select b_type into bank_card_type_r from bank_card where b_number = dest_card_id;
+			select b_balance into card_balance_a from bank_card where b_number = source_card_id;
+			select b_balance into card_balance_r from bank_card where b_number = dest_card_id;
+
+		if applicant_id != client_id_applicant then 
+			return_code := 0;
+		end if;
+		if receiver_id != client_id_receiver then 
+			return_code := 0;
+		end if;
+		if bank_card_type_a = '信用卡' and bank_card_type_r = '储蓄卡' then 
+			return_code := 0;
+		end if;
+		if amount > card_balance_a then 
+			return_code := 0;
+		end if;
+1 		-- 对应能转账的情况，但需要排除不能转账的情况，因为设置return_code并没有返回
+2 		if bank_card_type_r = '信用卡' 
+3 		and bank_card_type_a = '储蓄卡' 
+4 		and card_balance_a > amount 
+5 		and applicant_id = client_id_applicant 
+6 		and receiver_id = client_id_receiver  then 
+7 			card_balance_r := card_balance_r - amount;
+8 			card_balance_a := card_balance_a - amount;
+9 			return_code := 1;
+10		end if;
+
+		if bank_card_type_r = '储蓄卡' 
+		and bank_card_type_a = '储蓄卡' 
+		and card_balance_a > amount 
+		and applicant_id = client_id_applicant  
+		and receiver_id = client_id_receiver then
+			card_balance_r := card_balance_r + amount;
+			card_balance_a := card_balance_a - amount;
+			return_code := 1;
+		end if;
+
+		update bank_card set b_balance = card_balance_a where b_number = source_card_id;
+		update bank_card set b_balance = card_balance_r where b_number = dest_card_id;
+
+	end; 

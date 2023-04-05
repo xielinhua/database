@@ -1,0 +1,22 @@
+1 	select 
+2 		wk as week_of_trading,
+3 		sum(case when c = 1 then amount else null end) as monday,
+4 		sum(case when c = 2 then amount else null end) as tuesday,
+5 		sum(case when c = 3 then amount else null end) as wendnesday,
+6 		sum(case when c = 4 then amount else null end) as thursday,
+7 		sum(case when c = 5 then amount else null end) as friday
+8 	from
+9 	(
+10		select wk, extract(DOW FROM tms) as c, amount from
+11		(
+12			select date_part('week', pro_purchase_time)-5 as wk,
+13				cast(pro_purchase_time as timestamp) as tms,
+14				sum(pro_quantity * f_amount) as amount
+15			from property join fund
+16			on pro_pif_id = f_id
+17			where pro_type = 3 and pro_purchase_time like '2022-02-%'
+18			group by pro_purchase_time
+19		)
+20	)
+21	group by wk
+22	order by wk asc;

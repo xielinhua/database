@@ -1,0 +1,46 @@
+1 	--coalesce()用来对total_amount进行判空操作，用来解决total_amount为空时，排序出现错误的问题，名字为“黄雨滢”
+2 	 --的客户total_amount为null，排序处在第一行
+3 
+4 	 --要选择处total_amount，可以在每个表中选出各自表中对应商品数量*该产品每份金额的总和，记为total_amount1，
+5 	 --再用UNION进行合并，并对total_amount1进行求和
+6 
+7 	 --三表联合查询需要使用join关键字，要获得所有客户的信息，应当把client当作第一个，使用left join 连接
+8 	 --property表，再连接fund/insurance/finances_product表，注意顺序
+9 
+10	 --查询条件where子句中应当包含pro_quantity为null的情况，否则会遗失数据
+11	 
+12	select c_name, c_id_card, coalesce(total_amount, 0) as total_amount from
+13	(
+14		select c_name, c_id_card, sum(total_amount1) as total_amount from
+15	(
+16			select c_id, c_name, c_id_card, total_amount1 from
+17			(
+18				select c_id, c_name, c_id_card, sum(pro_quantity * f_amount) as total_amount1
+19				from client left join property on c_id = pro_c_id
+20				left join fund on pro_pif_id = f_id
+21				where pro_type = 3 or pro_quantity is null
+22				group by c_id, c_name, pro_c_id
+23
+24				UNION
+25
+26				select c_id, c_name, c_id_card, sum(pro_quantity * i_amount) as total_amount1
+27				from client left join property on c_id = pro_c_id
+28				left join insurance on pro_pif_id = i_id
+29				where pro_type = 2 or pro_quantity is null
+30				group by c_id, c_name, pro_c_id
+31
+32				UNION
+33
+34				select c_id, c_name, c_id_card, sum(pro_quantity * p_amount) as total_amount1
+35				from client left join property on c_id = pro_c_id
+36				left join finances_product on pro_pif_id = p_id
+37				where pro_type = 1 or pro_quantity is null
+38				group by c_id, c_name, pro_c_id
+39			)
+40			order by total_amount1 desc
+41		)
+42		group by c_name, c_id_card
+43		order by total_amount desc
+44	)
+45	group by c_name, c_id_card, total_amount
+46	order by total_amount desc;

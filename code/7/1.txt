@@ -1,0 +1,39 @@
+1 	--创建触发器函数TRI_INSERT_FUNC()
+2 	CREATE OR REPLACE FUNCTION TRI_INSERT_FUNC() RETURNS TRIGGER AS
+3 	$$
+4 	DECLARE
+5 	   --此处用declare语句声明你所需要的变量
+6 	BEGIN
+7 	   --此处插入触发器业务
+8 	   if new.pro_type < 1 or new .pro_type > 3 then 
+9 		  raise exception '%', concat('type ', concat(to_char(new.pro_type), ' is illegal!'));
+10	   end if;
+11
+12	   if new.pro_type = 1 and new.pro_pif_id not in (
+13		  select p_id from finances_product
+14	   ) then
+15		  raise exception '%', concat('finances product #', concat(to_char(new.pro_pif_id), ' not found!'));
+16	   end if;
+17
+18	   if new.pro_type = 2 and new.pro_pif_id not in (
+19		  select i_id from insurance
+20	   ) then
+21		  raise exception '%', concat('insurance #', concat(to_char(new.pro_pif_id), ' not found!'));
+22	   end if;
+23
+24	   if new.pro_type = 3 and new.pro_pif_id not in (
+25		  select f_id from fund
+26	   ) then
+27		  raise exception '%', concat('fund #', concat(to_char(new.pro_pif_id), ' not found!'));
+28	   end if;
+29
+30	   --触发器业务结束
+31	   return new;--返回插入的新元组
+32	END
+33	$$ LANGUAGE PLPGSQL;
+34
+35
+36	-- 创建before_property_inserted触发器，使用函数TRI_INSERT_FUNC实现触发器逻辑：
+37	CREATE  TRIGGER before_property_inserted BEFORE INSERT ON property
+38	FOR EACH ROW
+39	EXECUTE PROCEDURE TRI_INSERT_FUNC();

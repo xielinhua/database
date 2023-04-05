@@ -1,0 +1,20 @@
+1 	select 
+2 		pyear, 
+3 		rank() over(partition by pyear order by sum_amount desc) as rk, 
+4 		p_id, 
+5 		sum_amount as sumamount
+6 	from
+7 	(
+8 	  select 
+9 		date_part('year', pro_purchase_time) as pyear, 
+10		p_id, 
+11		sum(p_amount * pro_quantity) as sum_amount 
+12	  from property 
+13	  left join finances_product 
+14	  on pro_pif_id = p_id
+15	  where pro_type = 1 
+16	  and (pro_purchase_time like '2010-%' or pro_purchase_time like '2011-%')
+17	  group by pro_purchase_time, pro_pif_id, p_id
+18	)
+19	group by pyear, p_id, sumamount
+20	order by pyear asc, sumamount desc limit 6;

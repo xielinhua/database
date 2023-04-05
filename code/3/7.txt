@@ -1,0 +1,8 @@
+1 	select c_name, c_phone, c_mail 
+2 	from client
+3 	where c_id_card like '4201%'
+4 	and c_id not in (
+5 		select pro_c_id
+6 		from property
+7 		where pro_type = 1
+8 	);

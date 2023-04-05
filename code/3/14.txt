@@ -1,0 +1,9 @@
+1	select i_id, i_amount 
+2	from insurance
+3	where i_amount = 
+4	(
+5		select distinct i_amount 
+6		from insurance 
+7		order by i_amount 
+8		desc limit 1 offset 3
+9	);

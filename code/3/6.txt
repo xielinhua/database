@@ -1,0 +1,8 @@
+1	select pro_income, count(pro_income) as presence
+2	from property
+3	group by pro_income
+4	having presence >= all(
+5		select count(pro_income)
+6		from property
+7		group by pro_income
+8	);

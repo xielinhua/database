@@ -1,0 +1,7 @@
+1	CREATE TABLE t_emp
+2	(
+3		id INT PRIMARY KEY,
+4		name VARCHAR(32),
+5		deptid INT,
+6		salary FLOAT
+7	);

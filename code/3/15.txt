@@ -1,0 +1,15 @@
+1 	-- (1) 基金总收益排名(名次不连续)
+2 
+3 	select pro_c_id, sum(pro_income) as total_revenue, rank() over(order by total_revenue desc) as rank
+4 	from property
+5 	where pro_type = 3
+6 	group by pro_c_id
+7 	order by total_revenue desc;
+8 
+9 	-- (2) 基金总收益排名(名次连续)
+10
+11	select pro_c_id, sum(pro_income) as total_revenue, dense_rank() over(order by total_revenue desc) as rank
+12	from property
+13	where pro_type = 3
+14	group by pro_c_id
+15	order by total_revenue desc;

@@ -1,0 +1,2 @@
+1	--注意判空为c_mail is null 而不是 c_mail == null
+2	select c_id, c_name, c_id_card, c_phone from client where c_mail is null;

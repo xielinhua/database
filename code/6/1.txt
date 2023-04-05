@@ -1,0 +1,21 @@
+1 	create procedure sp_fibonacci(in m int)
+2 	as
+3 		declare i int := 2;
+4 		declare num_1 int := 0;
+5 		declare num_2 int := 1;
+6 		declare num_3 int := 0;
+7 	begin
+8 		insert into fibonacci(n, fibn) values (0, 0) on duplicate key update fibn = 0;
+9 		if m > 1 then insert into fibonacci(n, fibn) values(1, 1) 
+10		on duplicate key update fibn = 1;
+11		end if;
+12		while i < m loop
+13			insert into fibonacci(n, fibn) values(i, num_1 + num_2)
+14			on duplicate key update fibn = num_1 + num_2;
+15			num_3 := num_1;
+16			num_1 := num_2;
+17			num_2 := num_1 + num_3;
+18			i := i + 1;
+19		end loop;
+20	end;
+21	/

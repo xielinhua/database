@@ -1,0 +1,40 @@
+    -- 22) 查询购买了所有畅销理财产品的客户
+--   请用一条SQL语句实现该查询：
+
+
+select pro_c_id
+from
+(
+    select distinct pro_c_id, count(pro_pif_id) as amount
+    from
+    (
+        select pro_c_id, pro_pif_id from property
+        where pro_type = 1 and pro_pif_id in 
+        (
+            select pro_pif_id 
+            from
+            (
+                select pro_pif_id, count(pro_pif_id) as p_count
+                from property
+                where pro_type = 1
+                group by pro_pif_id
+                order by pro_pif_id asc
+            )
+            where p_count > 2
+            order by pro_pif_id asc
+        )
+        group by pro_c_id, pro_pif_id
+        order by pro_c_id asc
+    )
+    group by pro_c_id
+    order by pro_c_id asc
+)
+where amount = 3;
+
+
+
+
+
+
+
+--/*  end  of  your code  */

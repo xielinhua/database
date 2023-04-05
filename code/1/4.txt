@@ -1,0 +1,7 @@
+1	CREATE TABLE products
+2	(
+3		pid CHAR(10) PRIMARY KEY,
+4		name VARCHAR(32),
+5		brand CHAR(10) CONSTRAINT CK_products_brand CHECK(brand in ('A', 'B')),
+6		price INT CONSTRAINT CK_products_price CHECK(price > 0)
+7	);

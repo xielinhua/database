@@ -1,0 +1,30 @@
+1 	select pro_pif_id, count(pro_pif_id) as cc, dense_rank() over(order by cc desc) as prank
+2 	from property
+3 	where pro_type = 1 and pro_pif_id in
+4 	(
+5 		 select pro_pif_id
+6 		 from property
+7 		 where pro_type = 1 and pro_pif_id != 14 and pro_c_id in
+8 		 (
+9 				-- 筛选排名前三的客户id
+10			  select pro_c_id
+11			  from
+12			  (
+13					-- 购买了14号理财产品的客户，及购买数量的排名
+14				   select pro_c_id, dense_rank() over(order by p_count desc) as rk
+15				   from
+16				   (
+17						select pro_c_id, count(pro_pif_id) as p_count
+18						from property
+19						where pro_pif_id = 14 and pro_type = 1
+20						group by pro_c_id
+21						order by pro_c_id asc
+22				   )
+23			  )
+24			  where rk <= 3
+25			  order by pro_c_id asc
+26		 )
+27		 group by pro_pif_id     
+28	)
+29	group by pro_pif_id
+30	order by prank asc, pro_pif_id asc;

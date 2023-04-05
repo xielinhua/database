@@ -1,0 +1,15 @@
+1 	select b_c_id, sum(card_amount) as credit_card_amount from
+2 	(
+3 		select b_c_id, card_amount from
+4 		(
+5 			select b_c_id, sum(b_balance) as card_amount from bank_card
+6 			where b_type = '信用卡' and b_c_id in 
+7 				(
+8 					select b_c_id from bank_card 
+9 					where b_balance > 5000 and b_type = '信用卡'
+10				)
+11			group by b_c_id, b_balance
+12		)
+13	)
+14	group by b_c_id
+15	order by b_c_id;

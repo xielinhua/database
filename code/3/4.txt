@@ -1,0 +1,5 @@
+1	select client.c_name, client.c_phone, bank_card.b_number 
+2	from client, bank_card
+3	where client.c_id = bank_card.b_c_id 
+4	and bank_card.b_type = '储蓄卡'
+5	order by client.c_id;

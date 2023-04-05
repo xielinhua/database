@@ -1,0 +1,170 @@
+import java.sql.*;
+
+public class Transform {
+  static final String JDBC_DRIVER = "org.postgresql.Driver";
+    static final String DB_URL = "jdbc:postgresql://127.0.0.1:5432/postgres?";
+    static final String USER = "gaussdb";
+    static final String PASS = "Passwd123@123";
+    
+    /**
+     * 向sc表中插入数据
+     *
+     */
+    public static int insertSC(Connection connection){
+        PreparedStatement preparedStatement = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        String chinese = "select sno, chinese from entrance_exam where chinese is not null;";
+        String math = "select sno, math from entrance_exam where math is not null;";
+        String english = "select sno, english from entrance_exam where english is not null;";
+        String physics = "select sno, physics from entrance_exam where physics is not null";
+        String chemistry = "select sno, chemistry from entrance_exam where chemistry is not null;";
+        String biology = "select sno, biology from entrance_exam where biology is not null;";
+        String history = "select sno, history from entrance_exam where history is not null;";
+        String geography = "select sno, geography from entrance_exam where geography is not null;";
+        String politics = "select sno, politics from entrance_exam where politics is not null;";
+        String sql = "insert into sc values(?, ?, ?);";
+        try{
+          statement = connection.createStatement();
+          //查询所有学生的语文成绩
+          resultSet = statement.executeQuery(chinese);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("chinese");
+            //插入所有学生的语文成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "chinese");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的数学成绩
+          resultSet = statement.executeQuery(math);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("math");
+            //插入所有学生的语文成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "math");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的英语成绩
+          resultSet = statement.executeQuery(english);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("english");
+            //插入所有学生的语文成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "english");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的物理成绩
+          resultSet = statement.executeQuery(physics);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("physics");
+            //插入所有学生的物理成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "physics");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的化学成绩
+          resultSet = statement.executeQuery(chemistry);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("chemistry");
+            //插入所有学生的化学成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "chemistry");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的生物成绩
+          resultSet = statement.executeQuery(biology);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("biology");
+            //插入所有学生的生物成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "biology");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的历史成绩
+          resultSet = statement.executeQuery(history);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("history");
+            //插入所有学生的历史成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "history");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的地理成绩
+          resultSet = statement.executeQuery(geography);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("geography");
+            //插入所有学生的地理成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "geography");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+
+          //查询所有学生的政治成绩
+          resultSet = statement.executeQuery(politics);
+          while(resultSet.next()){
+            int sno = resultSet.getInt("sno");
+            int grade = resultSet.getInt("politics");
+            //插入所有学生的政治成绩
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, sno);
+            preparedStatement.setString(2, "politics");
+            preparedStatement.setString(3, String.valueOf(grade));
+            preparedStatement.executeUpdate();
+          }
+        }catch(SQLException e){
+          e.printStackTrace();
+        }finally{
+          try{
+            if(preparedStatement != null){
+              preparedStatement.close();
+            }
+            if(statement != null){
+              statement.close();
+            }
+            if(resultSet != null){
+              resultSet.close();
+            }
+          }catch(SQLException e){
+            e.printStackTrace();
+          }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Class.forName(JDBC_DRIVER);
+        Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+        insertSC(connection);
+    }
+}

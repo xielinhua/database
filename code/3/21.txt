@@ -1,0 +1,24 @@
+1 	select distinct p1.pro_c_id
+2 	from
+3 	(
+4 	   --根据pro_c_id进行分组，用count统计出每个用户购买的理财产品的数量
+5 	   select pro_c_id, count(distinct pro_pif_id) as p_count
+6 	   from property 
+7 	   where pro_type = 1
+8 	   group by pro_c_id
+9 	) p1
+10	-- 从p1中筛选理财产品>3的客户
+11	where p1.p_count > 3 and p1.p_count > 
+12	(
+13	   -- 查询理财产品>3的客户购买的基金的数量
+14	   select f_count 
+15	   from 
+16	   (
+17		  select pro_c_id, count(distinct pro_pif_id) as f_count
+18		  from property
+19		  where pro_type = 3
+20		  group by pro_c_id
+21	   ) p2
+22	   where p1.pro_c_id = p2.pro_c_id
+23	)
+24	order by p1.pro_c_id asc;

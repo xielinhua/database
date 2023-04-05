@@ -1,0 +1,144 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class Transfer {
+    static final String JDBC_DRIVER = "org.postgresql.Driver";
+    static final String DB_URL = "jdbc:postgresql://127.0.0.1:5432/postgres?";
+    static final String USER = "gaussdb";
+    static final String PASS = "Passwd123@123";
+    /**
+     * 转账操作
+     *
+     * @param connection 数据库连接对象
+     * @param sourceCard 转出账号
+     * @param destCard 转入账号
+     * @param amount  转账金额
+     * @return boolean
+     *   true  - 转账成功
+     *   false - 转账失败
+     */
+    public static boolean transferBalance(Connection connection,
+                             String sourceCard,
+                             String destCard, 
+                             double amount){
+        PreparedStatement preparedStatement_sour = null;
+        PreparedStatement preparedStatement_dest = null;
+        Statement statement = null;
+        ResultSet resultSet_sour = null;
+        ResultSet rseultSet_dest = null;
+        double balance_source = 0;
+        double balance_dest = 0;
+        String source_type = null;
+        String dest_type = null;
+        try{
+            statement = connection.createStatement();
+            //查询转出银行卡的余额,类型
+            String sql_query_s_b = "select b_balance, b_type from bank_card where b_number = '" + sourceCard + "';";
+            resultSet_sour = statement.executeQuery(sql_query_s_b);
+            while(resultSet_sour.next()){
+                balance_source = resultSet_sour.getDouble("b_balance");
+                // source_type = resultSet_sour.getString("b_type");
+                source_type = resultSet_sour.getString("b_type").trim();
+                // System.out.println("source_type = " + source_type + "balance = " + balance_source);
+            }
+
+            //查询转入银行卡的余额，类型
+            String sql_query_d_b = "select b_balance, b_type from bank_card where b_number = '" + destCard + "';";
+            rseultSet_dest = statement.executeQuery(sql_query_d_b);
+            while(rseultSet_dest.next()){
+                balance_dest = rseultSet_dest.getDouble("b_balance");
+                // dest_type = rseultSet_dest.getString("b_type");
+                dest_type = rseultSet_dest.getString("b_type").trim(); //去空格
+                // System.out.println("dest_type = " + dest_type + " balance = " + balance_dest);
+            }
+
+            if(source_type == null || dest_type == null){
+                return false;
+            }
+            if("信用卡".equals(source_type)){
+            // select查询出来的source_type含有空格，不能用equals
+            //可以采用contains或者去空格后再使用equals
+            // if(source_type.contains("信用卡")){
+                return false;
+            }
+            if(balance_source < amount) {
+                return false;
+            }
+
+            connection.setAutoCommit(false);
+            String sql_save = "update bank_card set b_balance = ? where b_number = ?";
+            preparedStatement_sour = connection.prepareStatement(sql_save);
+            preparedStatement_sour.setDouble(1, balance_source - amount);
+            preparedStatement_sour.setString(2, sourceCard);
+            preparedStatement_sour.executeUpdate();
+
+            preparedStatement_dest = connection.prepareStatement(sql_save);
+            // if(dest_type.contains("储蓄卡")){
+            if(dest_type.equals("储蓄卡")){
+                preparedStatement_dest.setDouble(1, balance_dest + amount);
+                preparedStatement_dest.setString(2, destCard);
+                preparedStatement_dest.executeUpdate();
+            } else{
+                preparedStatement_dest.setDouble(1, balance_dest - amount);
+                preparedStatement_dest.setString(2, destCard);
+                preparedStatement_dest.executeUpdate();
+            }
+
+            connection.commit();
+            return true;
+
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally{
+            try{
+                if(statement != null){
+                    statement.close();
+                }
+                if(resultSet_sour != null){
+                    resultSet_sour.close();
+                }
+                if(rseultSet_dest != null){
+                    rseultSet_dest.close();
+                }
+                if(preparedStatement_dest != null){
+                    preparedStatement_dest.close();
+                }
+                if(preparedStatement_sour != null){
+                    preparedStatement_sour.close();
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    // 不要修改main() 
+    public static void main(String[] args) throws Exception {
+
+        Scanner sc = new Scanner(System.in);
+        Class.forName(JDBC_DRIVER);
+
+        Connection connection = DriverManager.getConnection(DB_URL, USER, PASS);
+
+        while(sc.hasNext())
+        {
+            String input = sc.nextLine();
+            if(input.equals(""))
+                break;
+
+            String[]commands = input.split(" ");
+            if(commands.length ==0)
+                break;
+            String payerCard = commands[0];
+            String  payeeCard = commands[1];
+            double  amount = Double.parseDouble(commands[2]);
+            if (transferBalance(connection, payerCard, payeeCard, amount)) {
+              System.out.println("转账成功。" );
+            } else {
+              System.out.println("转账失败,请核对卡号，卡类型及卡余额!");
+            }
+        }
+    }
+
+}

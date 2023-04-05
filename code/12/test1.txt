@@ -1,0 +1,2 @@
+1	# 备份
+2	gs_dump -U gaussdb -W 'Passwd123@123' -f residents_bak.sql -p 5432 residents -F t

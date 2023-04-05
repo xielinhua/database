@@ -1,0 +1,10 @@
+1 	select *
+2 	from
+3 	(
+4 		  select distinct p1.pro_c_id, p2.pro_c_id, count(p1.pro_pif_id) as total_count
+5 		  from property p1, property p2
+6 		  where p1.pro_c_id != p2.pro_c_id and p1.pro_pif_id = p2.pro_pif_id and p1.pro_type = 1 and p2.pro_type = 1
+7 		  group by p1.pro_c_id, p2.pro_c_id
+8 		  order by p1.pro_c_id asc
+9 	) p3
+10	where p3.total_count >= 2;

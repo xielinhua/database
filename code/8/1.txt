@@ -1,0 +1,25 @@
+1 	/*
+2 	   用create function语句创建符合以下要求的函数：
+3 	   依据客户编号计算该客户所有储蓄卡的存款总额。
+4 	   函数名为：get_Records。函数的参数名可以自己命名:*/
+5 	CREATE OR REPLACE FUNCTION get_deposit(client_id integer) 
+6 	 returns numeric(10,2)
+7 	 LANGUAGE plpgsql
+8 	AS
+9 	$$
+10	begin 
+11		return (
+12			select sum(b_balance) from bank_card
+13			where b_type = '储蓄卡' and b_c_id = client_id
+14			group by b_c_id);
+15	end;
+16	$$;
+17
+18	/*  应用该函数查询存款总额在100万(含)以上的客户身份证号，
+19		姓名和存储总额(total_deposit)，
+20		结果依存款总额从高到代排序  */
+21	select c_id_card, c_name, get_deposit(c_id) as total_deposit
+22	from client, bank_card
+23	where get_deposit(c_id) >= 1000000.00
+24	group by c_id, c_id_card, c_name
+25	order by total_deposit desc;

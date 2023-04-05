@@ -1,0 +1,4 @@
+1	----语句1：删除表orderDetail中的列orderDate
+2	ALTER TABLE orderDetail DROP orderDate;
+3	----语句2：添加列unitPrice
+4	ALTER TABLE orderDetail ADD unitPrice numeric(10, 2);

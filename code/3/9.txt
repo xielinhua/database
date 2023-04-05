@@ -1,0 +1,11 @@
+1 	select c_name, c_phone, c_mail
+2 	from client
+3 	where c_id in (
+4 		select pro_c_id
+5 		from property
+6 		where pro_type = 3 and pro_pif_id in(
+7 			select f_id
+8 			from fund
+9 			where f_type = '货币型'
+10		)
+11	);
